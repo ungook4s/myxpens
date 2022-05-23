@@ -6,6 +6,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 import time
 import configparser as parser
+import mylib
 
 # ----------------------------------------------------------------------------------
 # Input
@@ -18,26 +19,13 @@ attendeeName = properties['CONFIG']['attendee']
 # functions
 # ----------------------------------------------------------------------------------
 timeout = 60
+driver = webdriver.Chrome("./chromedriver")
 
-def waitXpath(label, target):
-    print(label)
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, target)))
-
-def sendKeys(label, target, value):
-    print(label)
-    WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, target))).send_keys(value)
-
-def clickCss(label, target):
-    print(label)
-    WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.CSS_SELECTOR, target))).click()
-
-def clickXpath(label, target):
-    print(label)
-    WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, target))).click()
-
-def sleep(value):
-    print(f"sleep for {value}")
-    time.sleep(value)
+clickCss = mylib.clickCss(driver, timeout)
+clickXpath = mylib.clickXpath(driver, timeout)
+waitXpath = mylib.waitXpath(driver, timeout)
+sendKeys = mylib.sendKeys(driver, timeout)
+sleep = mylib.sleep(driver, timeout)
 
 def addAttendee():
     clickCss("Attendee (0)", ".attendees-link > .sapcnqr-button__text")
@@ -70,22 +58,22 @@ def addAttendee():
 
     sleep(2)
 
-    waitXpath("Wait Save is done", "//p[@class='sapcnqr-spinner__message']")
-    waitXpath("Wait Save is done", "//li[@class='form-header__list-item']")
-    waitXpath("Wait Save is done", "//*[text()='Allocate']")
+    waitXpath("Wait ...", "//p[@class='sapcnqr-spinner__message']")
+    waitXpath("Wait ..", "//li[@class='form-header__list-item']")
+    # waitXpath("Wait .", "//*[text()='Allocate']")
 
 # ----------------------------------------------------------------------------------
 # main
 # ----------------------------------------------------------------------------------
 # Launch Browser
-driver = webdriver.Chrome("./chromedriver")
 
 driver.get("http://www.siemens.com/travel")
 
 clickXpath("Show all available login methods", "//a[@id='btnToggle']")
 
-clickXpath("select first expense", "//li[@class='  cnqr-tile-1']")
+clickXpath("Select first expense", "//li[@class='  cnqr-tile-1']")
 
+# Find expenses
 xpath="//div[text() = 'Business Meals (Staff Only) (taxable)']"
 waitXpath("Find all Business Meals", xpath);
 
@@ -95,6 +83,7 @@ for i in range(len(elements)):
     elem = elements[i]
 
     try:
+        # Find expend rows with attendee
         # xpath ..// find from its parent node
         elem.find_element(By.XPATH, "..//span[@class='screen-reader-only']") 
         print("Skip the expense. Attendee is already added.")
@@ -105,8 +94,7 @@ for i in range(len(elements)):
         sleep(1)
 
         waitXpath("Wait till save is done", "//li[@class='form-header__list-item']")
-
-        waitXpath("Wait", "//*[text()='Allocate']")
+        # waitXpath("Wait .", "//*[text()='Allocate']")
 
         sleep(1)
 
@@ -125,5 +113,8 @@ for i in range(len(elements)):
         waitXpath("Wait for list is dispalyed", xpath)
 
         elements = driver.find_elements(By.XPATH, xpath)
+
+
+print("Job is complete")
 
 # driver.close()

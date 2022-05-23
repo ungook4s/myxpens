@@ -7,6 +7,7 @@ from selenium.common.exceptions import NoSuchElementException
 import csv
 import time
 import configparser as parser
+import mylib
 
 # ----------------------------------------------------------------------------------
 # Input
@@ -17,35 +18,27 @@ city = properties['CONFIG']['city']
 bizPurpose = properties['CONFIG']['purpose']
 
 # ----------------------------------------------------------------------------------
-# functions
-# ----------------------------------------------------------------------------------
-timeout = 60
-
-# ----------------------------------------------------------------------------------
 # main
 # ----------------------------------------------------------------------------------
-# Launch Browser
+timeout = 60
 driver = webdriver.Chrome("./chromedriver")
+
+clickCss = mylib.clickCss(driver, timeout)
+clickXpath = mylib.clickXpath(driver, timeout)
+waitXpath = mylib.waitXpath(driver, timeout)
+sendKeys = mylib.sendKeys(driver, timeout)
+sleep = mylib.sleep(driver, timeout)
 
 driver.get("http://www.siemens.com/travel")
 
-xpath="//a[@id='btnToggle']"
-WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+clickXpath("Show all available login methods", "//a[@id='btnToggle']")
 
-# xpath="//div[@class='login-method-text']"
-# WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+clickXpath("Select first expense", "//li[@class='  cnqr-tile-1']")
 
-xpath="//a[@class='btn btn-primary right-aligned']"
-WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+waitXpath("Wait page is loaded", "//span[@data-trans-id='Expense.addExpense']")
 
-# select first expense
-xpath="//li[@class='  cnqr-tile-1']"
-WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
-
-# Find error nodes
+# Find expense with Error
 xpath="//button[@aria-label='Show Errors']"
-WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath)))
-
 elements = driver.find_elements(By.XPATH, xpath)
 
 while (len(elements) > 0):
@@ -56,54 +49,55 @@ while (len(elements) > 0):
     xpath="../../..//div[@data-nuiexp='expenseType-name']"
     elem.find_element(By.XPATH, xpath).click() 
 
-    xpath="//li[@class='form-header__list-item']"
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath)))
+    waitXpath("Wait ...", "//p[@class='sapcnqr-spinner__message']")
+    waitXpath("Wait ..", "//li[@class='form-header__list-item']")
 
-    xpath="//*[text()='Allocate']"
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath)))
+    sleep(1)
 
-    time.sleep(1)
-
-    # City of Purchase
     xpath="//input[@data-nuiexp='field-locName']"
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath)))
-    time.sleep(1) # it requires, otherwise it went wrong...
+    waitXpath("City of Purchase", xpath)
+    sleep(1) # it requires, otherwise it went wrong...
 
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).send_keys(Keys.CONTROL + "a")
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).send_keys(Keys.DELETE)
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).send_keys(city)
+    sendKeys("Send keys Ctrl+a", xpath, Keys.CONTROL + "a")
+    sendKeys("Send keys DEL", xpath, Keys.DELETE)
+    sendKeys("Send keys city", xpath, city)
 
-    time.sleep(1)
+    sleep(1)
 
-    xpath=f"//li/span[text()='{city}']"
-    WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+    clickXpath("Click city in Combo", f"//li/span[text()='{city}']")
 
-    # wait till input is complete
-    xpath=f"//input[@value='{city}']"
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath)))
+    sleep(1)
 
-    time.sleep(2)
+    waitXpath("Wait till input is complete", f"//input[@value='{city}']")
+
+    sleep(2)
 
     # Business Purpose
     xpath="//input[@data-nuiexp='field-description']"
     try:
         elem = driver.find_element(By.XPATH, xpath) 
-        WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath)))
+        waitXpath("Wait", xpath)
 
-        time.sleep(1) # it requires, otherwise it went wrong...
+        sleep(1) # it requires, otherwise it went wrong...
 
-        elem.send_keys(Keys.CONTROL + "a")
-        elem.send_keys(Keys.DELETE)
-        elem.send_keys(bizPurpose)
+        sendKeys("Send keys Business Purpose", xpath, Keys.CONTROL + "a")
+        sendKeys("Send keys Business Purpose", xpath, Keys.DELETE)
+        sendKeys("Send keys Business Purpose", xpath, bizPurpose)
     except NoSuchElementException:
         print("Skip. No Business Purpose")
 
-    # Save Expense
-    xpath = "//span[@data-trans-id='expenseEntry.saveExpense']"
-    WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
-    time.sleep(1)
+    clickXpath("Save Expense", "//span[@data-trans-id='expenseEntry.saveExpense']")
 
+    sleep(0.5)
+
+    waitXpath("Wait ...", "//p[@class='sapcnqr-spinner__message sapcnqr-spinner__message--large']")
+
+    sleep(1)
+
+    waitXpath("Wait list page is loaded", "//span[@data-trans-id='Expense.addExpense']")
+
+    # Find expense with Error
     xpath="//button[@aria-label='Show Errors']"
-    WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath)))
-
     elements = driver.find_elements(By.XPATH, xpath)
+
+
