@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import csv
 import time
-
+import mylib
 
 # ----------------------------------------------------------------------------------
 # Input
@@ -18,73 +18,80 @@ import time
 # ----------------------------------------------------------------------------------
 # functions
 # ----------------------------------------------------------------------------------
+driver = webdriver.Chrome("./chromedriver")
 timeout = 60
 
-def newExpense(tranDate, fromLoc, toLoc, vehicleId, distance, comment):
-    xpath = "//span[@data-trans-id='Expense.addExpense']"
-    WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+clickCss = mylib.clickCss(driver, timeout)
+clickXpath = mylib.clickXpath(driver, timeout)
+waitXpath = mylib.waitXpath(driver, timeout)
+sendKeys = mylib.sendKeys(driver, timeout)
+sleep = mylib.sleep(driver, timeout)
 
-    xpath = "//span[text()='Personal Car Mileage']"
-    WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+def newExpense(tranDate, fromLoc, toLoc, vehicleId, distance, comment):
+    clickXpath("Add Expense", "//span[@data-trans-id='Expense.addExpense']")
+
+    clickXpath("Personal Car Mileage", "//span[text()='Personal Car Mileage']")
 
     time.sleep(0.3)
 
     xpath = "//input[@name='transactionDate']"
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).send_keys(Keys.CONTROL + "a")
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).send_keys(Keys.DELETE)
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).send_keys(tranDate)
+    sendKeys("Send keys Ctrl+a", xpath, Keys.CONTROL + "a")
+    sendKeys("Send keys DEL", xpath, Keys.DELETE)
+    sendKeys("Send keys {tranDate}}", xpath, tranDate)
 
-    xpath = "//input[@name='fromLocation']"
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).send_keys(fromLoc)
+    sendKeys("Send keys {fromLoc}", "//input[@name='fromLocation']", fromLoc)
 
-    xpath = "//input[@name='toLocation']"
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).send_keys(toLoc)
+    sendKeys("Send keys {toLoc}", "//input[@name='toLocation']", toLoc)
 
-    xpath = "//div[@data-nuiexp='field-carKey']"
-    WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+    clickXpath("VehicleId Combo", "//div[@data-nuiexp='field-carKey']")
 
-    xpath = f"//li/span[text()='{vehicleId}']"
-    WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+    clickXpath(f"VehicleId {vehicleId}", f"//li/span[text()='{vehicleId}']")
 
     xpath = "//input[@name='businessDistance']"
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).send_keys(Keys.CONTROL + "a")
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).send_keys(Keys.DELETE)
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).send_keys(distance)
+    sendKeys("Send keys Ctrl+a", xpath, Keys.CONTROL + "a")
+    sendKeys("Send keys DEL", xpath, Keys.DELETE)
+    sendKeys("Send keys distance", xpath, distance)
+    sendKeys("Send keys comment", "//textarea[@name='comment']", comment)
 
-    xpath = "//textarea[@name='comment']"
-    WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).send_keys(comment)
-
-    xpath = "//span[@data-trans-id='expenseEntry.saveExpense']"
-    WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+    clickXpath("Save Expense", "//span[@data-trans-id='expenseEntry.saveExpense']")
 
     time.sleep(2)
-
-    # # Wait Save is done
-    # xpath="//*[text()='Allocate']"
-    # WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath)))
 
 # ----------------------------------------------------------------------------------
 # main
 # ----------------------------------------------------------------------------------
-# Launch Browser
-driver = webdriver.Chrome("./chromedriver")
-
 driver.get("http://www.siemens.com/travel")
 
-# select first expense
-xpath="//li[@class='  cnqr-tile-1']"
-WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+clickXpath("Show all available login methods", "//a[@id='btnToggle']")
+
+clickXpath("Select first expense", "//li[@class='  cnqr-tile-1']")
 
 with open('mileage.csv', 'r') as csvfile:
     f = csv.reader(csvfile, delimiter='\t', lineterminator="\r\n")
+    lineno = 0;
     for values in f:
-        trDate, fromLoc, toLoc, vehicleId, distance, comment = values
+        lineno += 1
+        comment = ""
+
+        if (len(values) == 0) : continue
+
+        if (len(values) == 1) : 
+            if values[0].startswith("#") : continue
+
+        if (len(values) < 5 or len(values) > 6) :
+            print(f"Content of csv file is not proper. Line {lineno}: {values}" )
+            print("Exmaple row is following" )
+            print("05/02/2022	Home	HKMC	Short	100" )
+            sys.exit()
+        elif (len(values) == 6 ):
+            trDate, fromLoc, toLoc, vehicleId, distance, comment = values
+        elif (len(values) == 5 ):
+            trDate, fromLoc, toLoc, vehicleId, distance = values
 
         distance = distance.strip()
         comment = comment.strip()
-        # if (len(values) > 5):
-        #     comment = values[5]
+
         print(trDate, fromLoc, toLoc, vehicleId, distance, comment)
-
         newExpense(trDate, fromLoc, toLoc, vehicleId, distance, comment)
-
+        
+print("Job is complete")
