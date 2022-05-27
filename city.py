@@ -100,4 +100,4 @@ while (len(elements) > 0):
     xpath="//button[@aria-label='Show Errors']"
     elements = driver.find_elements(By.XPATH, xpath)
 
-
+print("Job is complete")

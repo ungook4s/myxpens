@@ -9,11 +9,12 @@ There are few stpes to be done before running it.
 4. Update config.ini 
 
 Now, you're ready to run the following script. 
+Ensure that meal expense are modified to "Business Meals (Staff Only)" before excuting the programs.
 
 # attendee.py
 Attach atendee on "Business Meals (Staff Only)"
 # city.py
-It updates "City of Purchase" and "Business Purpose"
+It updates "City of Purchase" and "Business Purpose" if the expense misses the one of information.
 # mileage.py
 1. Vehicle Id should be set "Long" and "Short"
 2. put the record in mileage.csv
