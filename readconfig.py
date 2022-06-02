@@ -11,6 +11,12 @@ print(city)
 attendeeName = properties['CONFIG']['attendee']
 print(attendeeName)
 
+rowNo = properties['CONFIG']['row_no']
+print(rowNo)
+
+print(f"//div[@data-id='mytasks-expensereportslist']//li[@class='  cnqr-tile-{rowNo}']")
+
+
 # Test csv file
 import sys
 import csv

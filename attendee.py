@@ -19,7 +19,11 @@ attendeeName = properties['CONFIG']['attendee']
 # functions
 # ----------------------------------------------------------------------------------
 timeout = 60
-driver = webdriver.Chrome("./chromedriver")
+
+options = webdriver.ChromeOptions()
+options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
+# options.add_experimental_option('prefs', {'intl.accept_languages': 'ko,ko_KR'})
+driver = webdriver.Chrome("./chromedriver", chrome_options=options)
 
 clickCss = mylib.clickCss(driver, timeout)
 clickXpath = mylib.clickXpath(driver, timeout)
@@ -71,7 +75,8 @@ driver.get("http://www.siemens.com/travel")
 
 clickXpath("Show all available login methods", "//a[@id='btnToggle']")
 
-clickXpath("Select first expense", "//li[@class='  cnqr-tile-1']")
+rowNo = properties['CONFIG']['row_no']
+clickXpath("Select first expense", f"//div[@data-id='mytasks-expensereportslist']//li[contains(@class, 'cnqr-tile-{rowNo}')]")
 
 # Find expenses
 xpath="//div[text() = 'Business Meals (Staff Only) (taxable)']"

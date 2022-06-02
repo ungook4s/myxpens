@@ -11,10 +11,10 @@ There are few stpes to be done before running it.
 Now, you're ready to run the following script. 
 Ensure that meal expense are modified to "Business Meals (Staff Only)" before excuting the programs.
 
-# attendee.py
+# run_attendee.bat
 Attach atendee on "Business Meals (Staff Only)"
-# city.py
+# run_city
 It updates "City of Purchase" and "Business Purpose" if the expense misses the one of information.
-# mileage.py
+# run_mileage
 1. Vehicle Id should be set "Long" and "Short"
 2. put the record in mileage.csv
