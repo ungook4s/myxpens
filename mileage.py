@@ -68,7 +68,19 @@ def newExpense(tranDate, fromLoc, toLoc, vehicleId, distance, comment):
 # ----------------------------------------------------------------------------------
 driver.get("http://www.siemens.com/travel")
 
-clickXpath("Show all available login methods", "//a[@id='btnToggle']")
+waitXpath("wait", "//div[@class='login-method-title']")
+
+email = properties['CONFIG']['email']
+passwd = properties['CONFIG']['passwd']
+if (len(email) > 0):
+    clickXpath("Email", "//div[@class='login-method-icon icon-mail_login']")
+    waitXpath("wait", "//div[@class='login-method-collapsible in collapse show']")
+
+    sendKeys("email", "//input[@id='username']", email)
+    sendKeys("password", "//input[@id='password']", passwd)
+
+    clickXpath("Login", "//*[@id='btnLoginEmail']")
+    clickXpath("Mobile Authentication", "//div[@class='login-method-icon icon-pingid']")
 
 rowNo = properties['CONFIG']['row_no']
 clickXpath("Select first expense", f"//div[@data-id='mytasks-expensereportslist']//li[contains(@class, 'cnqr-tile-{rowNo}')]")
