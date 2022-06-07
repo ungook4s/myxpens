@@ -6,6 +6,7 @@ from selenium.webdriver.common.keys import Keys
 import csv
 import time
 import mylib
+import configparser as parser
 
 # ----------------------------------------------------------------------------------
 # Input
@@ -14,6 +15,8 @@ import mylib
 # seperator: tab
 # Date          from    to      vehicle distance    comment
 # 05/02/2022	Home	HKMC	Short	100
+properties = parser.ConfigParser()
+properties.read('./config.ini')
 
 # ----------------------------------------------------------------------------------
 # functions
@@ -67,7 +70,8 @@ driver.get("http://www.siemens.com/travel")
 
 clickXpath("Show all available login methods", "//a[@id='btnToggle']")
 
-clickXpath("Select first expense", "//li[@class='  cnqr-tile-1']")
+rowNo = properties['CONFIG']['row_no']
+clickXpath("Select first expense", f"//div[@data-id='mytasks-expensereportslist']//li[contains(@class, 'cnqr-tile-{rowNo}')]")
 
 with open('mileage.csv', 'r') as csvfile:
     f = csv.reader(csvfile, delimiter='\t', lineterminator="\r\n")
