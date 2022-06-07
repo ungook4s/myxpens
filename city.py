@@ -21,7 +21,10 @@ bizPurpose = properties['CONFIG']['purpose']
 # main
 # ----------------------------------------------------------------------------------
 timeout = 60
-driver = webdriver.Chrome("./chromedriver")
+options = webdriver.ChromeOptions()
+options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
+driver = webdriver.Chrome("./chromedriver", chrome_options=options)
+
 
 clickCss = mylib.clickCss(driver, timeout)
 clickXpath = mylib.clickXpath(driver, timeout)

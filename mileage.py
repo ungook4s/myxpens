@@ -18,7 +18,10 @@ import mylib
 # ----------------------------------------------------------------------------------
 # functions
 # ----------------------------------------------------------------------------------
-driver = webdriver.Chrome("./chromedriver")
+options = webdriver.ChromeOptions()
+options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
+driver = webdriver.Chrome("./chromedriver", chrome_options=options)
+
 timeout = 60
 
 clickCss = mylib.clickCss(driver, timeout)

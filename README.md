@@ -13,8 +13,8 @@ Ensure that meal expense are modified to "Business Meals (Staff Only)" before ex
 
 # run_attendee.bat
 Attach atendee on "Business Meals (Staff Only)"
-# run_city
+# run_city.bat
 It updates "City of Purchase" and "Business Purpose" if the expense misses the one of information.
-# run_mileage
+# run_mileage.bat
 1. Vehicle Id should be set "Long" and "Short"
 2. put the record in mileage.csv
