@@ -20,37 +20,7 @@ bizPurpose = properties['CONFIG']['purpose']
 # ----------------------------------------------------------------------------------
 # main
 # ----------------------------------------------------------------------------------
-timeout = 60
-options = webdriver.ChromeOptions()
-options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
-driver = webdriver.Chrome("./chromedriver", chrome_options=options)
-
-
-clickCss = mylib.clickCss(driver, timeout)
-clickXpath = mylib.clickXpath(driver, timeout)
-waitXpath = mylib.waitXpath(driver, timeout)
-sendKeys = mylib.sendKeys(driver, timeout)
-sleep = mylib.sleep(driver, timeout)
-
-# Login
-waitXpath("wait", "//div[@class='login-method-title']")
-
-email = properties['CONFIG']['email']
-passwd = properties['CONFIG']['passwd']
-if (len(email) > 0):
-    clickXpath("Email", "//div[@class='login-method-icon icon-mail_login']")
-    waitXpath("wait", "//div[@class='login-method-collapsible in collapse show']")
-
-    sendKeys("email", "//input[@id='username']", email)
-    sendKeys("password", "//input[@id='password']", passwd)
-
-    clickXpath("Login", "//*[@id='btnLoginEmail']")
-    clickXpath("Mobile Authentication", "//div[@class='login-method-icon icon-pingid']")
-
-rowNo = properties['CONFIG']['row_no']
-clickXpath("Select first expense", f"//div[@data-id='mytasks-expensereportslist']//li[contains(@class, 'cnqr-tile-{rowNo}')]")
-
-waitXpath("Wait page is loaded", "//span[@data-trans-id='Expense.addExpense']")
+exec(open('login.py').read())
 
 # Find expense with Error
 xpath="//button[@aria-label='Show Errors']"

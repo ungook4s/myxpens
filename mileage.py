@@ -1,39 +1,25 @@
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-import csv
-import time
-import mylib
 import configparser as parser
+import sys
 
 # ----------------------------------------------------------------------------------
 # Input
 # ----------------------------------------------------------------------------------
 # mileage.csv
 # seperator: tab
-# Date          from    to      vehicle distance    comment
-# 05/02/2022	Home	HKMC	Short	100
+# File  Date          from    to      vehicle distance    comment
+# Home.png  05/02/2022	Home	HKMC	Short	100
 properties = parser.ConfigParser()
 properties.read('./config.ini')
+
+imgDir = properties['CONFIG']['image_dir']
 
 # ----------------------------------------------------------------------------------
 # functions
 # ----------------------------------------------------------------------------------
-options = webdriver.ChromeOptions()
-options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
-driver = webdriver.Chrome("./chromedriver", chrome_options=options)
+def newExpense(tranDate, fromLoc, toLoc, vehicleId, distance, comment, filepath):
+    waitXpath("Wait", "//span[@data-trans-id='Expense.addExpense']")
+    time.sleep(1) # require break, otherwise error will happend which requires login again TT
 
-timeout = 60
-
-clickCss = mylib.clickCss(driver, timeout)
-clickXpath = mylib.clickXpath(driver, timeout)
-waitXpath = mylib.waitXpath(driver, timeout)
-sendKeys = mylib.sendKeys(driver, timeout)
-sleep = mylib.sleep(driver, timeout)
-
-def newExpense(tranDate, fromLoc, toLoc, vehicleId, distance, comment):
     clickXpath("Add Expense", "//span[@data-trans-id='Expense.addExpense']")
 
     clickXpath("Personal Car Mileage", "//span[text()='Personal Car Mileage']")
@@ -59,31 +45,38 @@ def newExpense(tranDate, fromLoc, toLoc, vehicleId, distance, comment):
     sendKeys("Send keys distance", xpath, distance)
     sendKeys("Send keys comment", "//textarea[@name='comment']", comment)
 
+
+    time.sleep(1)
+
+    # Update image
+    clickXpath("Show Reciept", "//button[@aria-controls='entry-receipts']")
+
+    clickXpath("Upload Receipt Image", "//a[@data-nuiexp='attach-receipt-modal-button']")
+
+    sleep(1)
+
+    clickXpath("Upload Image", "(//a[@class='sapcnqr-card__button'])[2]")
+
+    sleep(1)
+
+    subprocess.check_call([r"fileopen.exe", filepath])
+
+    sleep(3)
+
+    waitXpath("Wait page is loaded after attaching image", "//div[@class='receipt-image-zoom-container']")
+    waitXpath("Wait page is loaded: Deatch", "//span[@data-trans-id='receipt.detach']")
+
+    sleep(2)
+
     clickXpath("Save Expense", "//span[@data-trans-id='expenseEntry.saveExpense']")
 
     time.sleep(2)
 
+
 # ----------------------------------------------------------------------------------
 # main
 # ----------------------------------------------------------------------------------
-driver.get("http://www.siemens.com/travel")
-
-waitXpath("wait", "//div[@class='login-method-title']")
-
-email = properties['CONFIG']['email']
-passwd = properties['CONFIG']['passwd']
-if (len(email) > 0):
-    clickXpath("Email", "//div[@class='login-method-icon icon-mail_login']")
-    waitXpath("wait", "//div[@class='login-method-collapsible in collapse show']")
-
-    sendKeys("email", "//input[@id='username']", email)
-    sendKeys("password", "//input[@id='password']", passwd)
-
-    clickXpath("Login", "//*[@id='btnLoginEmail']")
-    clickXpath("Mobile Authentication", "//div[@class='login-method-icon icon-pingid']")
-
-rowNo = properties['CONFIG']['row_no']
-clickXpath("Select first expense", f"//div[@data-id='mytasks-expensereportslist']//li[contains(@class, 'cnqr-tile-{rowNo}')]")
+exec(open('login.py').read())
 
 with open('mileage.csv', 'r') as csvfile:
     f = csv.reader(csvfile, delimiter='\t', lineterminator="\r\n")
@@ -97,20 +90,22 @@ with open('mileage.csv', 'r') as csvfile:
         if (len(values) == 1) : 
             if values[0].startswith("#") : continue
 
-        if (len(values) < 5 or len(values) > 6) :
+        if (len(values) < 6 or len(values) > 7) :
             print(f"Content of csv file is not proper. Line {lineno}: {values}" )
             print("Exmaple row is following" )
-            print("05/02/2022	Home	HKMC	Short	100" )
+            print("File 05/02/2022	Home	HKMC	Short	100" )
             sys.exit()
+        elif (len(values) == 7 ):
+            filename, trDate, fromLoc, toLoc, vehicleId, distance, comment = values
         elif (len(values) == 6 ):
-            trDate, fromLoc, toLoc, vehicleId, distance, comment = values
-        elif (len(values) == 5 ):
-            trDate, fromLoc, toLoc, vehicleId, distance = values
+            filename, trDate, fromLoc, toLoc, vehicleId, distance = values
 
         distance = distance.strip()
         comment = comment.strip()
 
-        print(trDate, fromLoc, toLoc, vehicleId, distance, comment)
-        newExpense(trDate, fromLoc, toLoc, vehicleId, distance, comment)
+        filepath = f"{imgDir}\\{filename}"
+
+        print(trDate, fromLoc, toLoc, vehicleId, distance, comment, filepath)
+        newExpense(trDate, fromLoc, toLoc, vehicleId, distance, comment, filepath)
         
 print("Job is complete")

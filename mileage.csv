@@ -1,5 +1,20 @@
 # Date  From    To  Vehicle Id  Distance    Comment
 # Comment is optional, but other coluns 
-05/02/2022	Home	HKMC	Short	100
-05/02/2022	Home	HKMC	Long	508
-05/02/2022	Hotel	HKMC	Short	31	4 x 7.8 = 31
+Home2HKMC.png	05/02/2022	Home	HKMC	Short	100	
+Home2HKMC.png	05/02/2022	Home	HKMC	Long	508	
+HKMC2KTX.png	05/05/2022	HKMC	KTX	Short	66	
+Hotel.png	05/02/2022	Hotel	HKMC	Short	23	3 x 7.8 = 31
+Home2HKMC.png	05/09/2022	Home	HKMC	Short	100	
+Home2HKMC.png	05/09/2022	Home	HKMC	Long	508	
+Hotel.png	05/09/2022	Hotel	HKMC	Short	31	4 x 7.8 = 31
+Home2HKMC.png	05/16/2022	Home	HKMC	Short	100	
+Home2HKMC.png	05/16/2022	Home	HKMC	Long	204	
+Hotel.png	05/16/2022	Hotel	HKMC	Short	31	4 x 7.8 = 31
+HKMC2KTX.png	05/20/2022	KTX	HKMC	Short	100	5/20, 23
+HKMC2KTX.png	05/20/2022	KTX	HKMC	Long	32	
+Hotel.png	05/23/2022	Hotel	HKMC	Short	31	4 x 7.8 = 31
+Home2HKMC.png	05/27/2022	HKMC	Home	Short	100	
+Home2HKMC.png	05/27/2022	HKMC	Home	Long	204	
+Home2HKMC.png	05/30/2022	Home	HKMC	Short	100	
+Home2HKMC.png	05/30/2022	Home	HKMC	Long	508	5/30, 31
+Hotel.png	05/30/2022	Hotel	HKMC	Short	8	1 x 7.8 = 31

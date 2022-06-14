@@ -18,19 +18,6 @@ attendeeName = properties['CONFIG']['attendee']
 # ----------------------------------------------------------------------------------
 # functions
 # ----------------------------------------------------------------------------------
-timeout = 60
-
-options = webdriver.ChromeOptions()
-options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
-# options.add_experimental_option('prefs', {'intl.accept_languages': 'ko,ko_KR'})
-driver = webdriver.Chrome("./chromedriver", chrome_options=options)
-
-clickCss = mylib.clickCss(driver, timeout)
-clickXpath = mylib.clickXpath(driver, timeout)
-waitXpath = mylib.waitXpath(driver, timeout)
-sendKeys = mylib.sendKeys(driver, timeout)
-sleep = mylib.sleep(driver, timeout)
-
 def addAttendee():
     clickCss("Attendee (0)", ".attendees-link > .sapcnqr-button__text")
     sleep(1)
@@ -38,7 +25,7 @@ def addAttendee():
     xpath = "//*[@id='attendees-add']"
     waitXpath("Add", xpath)
     sendKeys("Add", xpath, Keys.RETURN)
-    sleep(1)
+    sleep(2)
 
     waitXpath("Attendees", "//span[@data-trans-id='attendees.import']")
 
@@ -46,7 +33,7 @@ def addAttendee():
     waitXpath("Wait for Attendee", xpath)
     clickXpath("Attendee", xpath)
 
-    sleep(0.5)
+    sleep(1)
 
     sendKeys("Enter Name in First Name", "//input[@name='firstName']", attendeeName)
 
@@ -69,28 +56,7 @@ def addAttendee():
 # ----------------------------------------------------------------------------------
 # main
 # ----------------------------------------------------------------------------------
-# Launch Browser
-
-driver.get("http://www.siemens.com/travel")
-
-#clickXpath("Show all available login methods", "//a[@id='btnToggle']")
-# Login
-waitXpath("wait", "//div[@class='login-method-title']")
-
-email = properties['CONFIG']['email']
-passwd = properties['CONFIG']['passwd']
-if (len(email) > 0):
-    clickXpath("Email", "//div[@class='login-method-icon icon-mail_login']")
-    waitXpath("wait", "//div[@class='login-method-collapsible in collapse show']")
-
-    sendKeys("email", "//input[@id='username']", email)
-    sendKeys("password", "//input[@id='password']", passwd)
-
-    clickXpath("Login", "//*[@id='btnLoginEmail']")
-    clickXpath("Mobile Authentication", "//div[@class='login-method-icon icon-pingid']")
-
-rowNo = properties['CONFIG']['row_no']
-clickXpath("Select first expense", f"//div[@data-id='mytasks-expensereportslist']//li[contains(@class, 'cnqr-tile-{rowNo}')]")
+exec(open('login.py').read())
 
 # Find expenses
 xpath="//div[text() = 'Business Meals (Staff Only) (taxable)']"
@@ -127,11 +93,15 @@ for i in range(len(elements)):
         # Go Back to list     # it requires due to stale elements
         driver.execute_script("window.history.go(-1)")
         sleep(1)
+        
 
         xpath="//div[text() = 'Business Meals (Staff Only) (taxable)']"
         waitXpath("Wait for list is dispalyed", xpath)
 
         elements = driver.find_elements(By.XPATH, xpath)
+
+        sleep(3) # occurs errors
+         
 
 
 print("Job is complete")
