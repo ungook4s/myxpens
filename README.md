@@ -19,6 +19,6 @@ There are few stpes to be done before running programs
 2. install python using https://docs.microsoft.com/ko-kr/windows/python/beginners
 3. install python libraries <br>
 3.1. Open command console <br>
-3.2. type "pip install selenium"
+3.2. type "pip install selenium" <br>
 3.3. type "pip install pyautogui"
 4. Update config.ini 
